@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual - Sistema de Gestión de Biblioteca</title>
+    <style>
+        /* Estilos generales */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            min-height: 100vh;
+        }
+        
+        /* Panel lateral */
+        .sidebar {
+            width: 300px;
+            background: linear-gradient(to bottom, #2c3e50, #34495e);
+            color: white;
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .logo {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid #3d566e;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .logo p {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+        
+        .nav-section {
+            margin: 20px 0;
+        }
+        
+        .nav-section h3 {
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: #3498db;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .nav-links {
+            list-style: none;
+        }
+        
+        .nav-links li {
+            border-bottom: 1px solid #3d566e;
+            position: relative;
+        }
+        
+        .nav-links a {
+            display: block;
+            padding: 12px 20px;
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .nav-links a:hover {
+            background-color: #34495e;
+            padding-left: 25px;
+        }
+        
+        .nav-links a.active {
+            background-color: #3498db;
+            color: white;
+            box-shadow: inset 3px 0 0 #2c80b7;
+        }
+        
+        /* Indicador de sección activa - NUEVO ESTILO */
+        .nav-links a.active::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-right: 8px solid #f5f7fa;
+            z-index: 2;
+        }
+        
+        /* Contenido principal */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            height: 100vh;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            scroll-margin-top: 20px;
+        }
+        
+        .section:last-child {
+            border-bottom: none;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .section h3 {
+            color: #3498db;
+            margin: 20px 0 10px;
+        }
+        
+        .section p {
+            margin-bottom: 15px;
+        }
+        
+        .section ul, .section ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .section li {
+            margin-bottom: 8px;
+        }
+        
+        /* Estilos para elementos especiales */
+        .note {
+            background-color: #e7f3ff;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .warning {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .code-block {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            border: 1px solid #4a5568;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        
+        .step {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            border-left: 4px solid #2ecc71;
+            transition: all 0.3s ease;
+        }
+        
+        /* Efecto de sombra en tarjetas - NUEVO ESTILO */
+        .step:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .step-number {
+            display: inline-block;
+            background-color: #2ecc71;
+            color: white;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        table th, table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: #7f8c8d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #636e72;
+        }
+        
+        .btn-success {
+            background-color: #27ae60;
+        }
+        
+        .btn-success:hover {
+            background-color: #219653;
+        }
+        
+        /* Roles de usuario */
+        .user-roles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .role-card {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-top: 4px solid #3498db;
+            transition: all 0.3s ease;
+        }
+        
+        /* Efecto de sombra en tarjetas - NUEVO ESTILO */
+        .role-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .role-card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .role-card h4 i {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        
+        .role-card.admin {
+            border-top-color: #e74c3c;
+        }
+        
+        .role-card.client {
+            border-top-color: #2ecc71;
+        }
+        
+        .role-card.librarian {
+            border-top-color: #f39c12;
+        }
+        
+        .role-card.financial {
+            border-top-color: #9b59b6;
+        }
+        
+        /* Plataformas */
+        .platforms {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .platform {
+            flex: 1;
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        /* Efecto de sombra en plataformas - NUEVO ESTILO */
+        .platform:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .platform i {
+            font-size: 2.5em;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        
+        /* Galería de imágenes */
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .image-container {
+            flex: 1;
+            min-width: 250px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        /* Efecto de sombra en galería - NUEVO ESTILO */
+        .image-container:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .image-placeholder {
+            height: 200px;
+            background: linear-gradient(45deg, #e0e0e0, #f5f5f5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .image-caption {
+            padding: 10px 15px;
+            font-size: 14px;
+            color: #555;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                height: auto;
+            }
+            
+            .user-roles, .platforms, .image-gallery {
+                flex-direction: column;
+            }
+        }
+        
+        /* Indicador de progreso */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: #f1f1f1;
+            z-index: 1000;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: #3498db;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        /* Botones de navegación rápida */
+        .quick-nav {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            z-index: 999;
+        }
+        
+        .quick-nav button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            margin: 5px 0;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            font-size: 18px;
+        }
+        
+        .quick-nav button:hover {
+            background-color: #2980b9;
+            transform: scale(1.1);
+        }
+        
+        /* Iconos */
+        .icon {
+            display: inline-block;
+            width: 20px;
+            text-align: center;
+            margin-right: 8px;
+        }
+        
+        /* Botones de acción */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        /* Nuevos estilos para la sección de app móvil */
+        .mobile-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+            transition: all 0.3s ease;
+        }
+        
+        /* Efecto de sombra en tarjetas de características - NUEVO ESTILO */
+        .feature-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .feature-card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-card h4 i {
+            margin-right: 10px;
+            color: #3498db;
+        }
+        
+        .api-endpoints {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .api-endpoint {
+            background: white;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 0 4px 4px 0;
+            transition: all 0.3s ease;
+        }
+        
+        /* Efecto de sombra en endpoints - NUEVO ESTILO */
+        .api-endpoint:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .endpoint-method {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #27ae60;
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .endpoint-get {
+            background: #3498db;
+        }
+        
+        .endpoint-post {
+            background: #f39c12;
+        }
+        
+        .endpoint-put {
+            background: #9b59b6;
+        }
+        
+        .endpoint-delete {
+            background: #e74c3c;
+        }
+        
+        .mobile-screens {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .screen-container {
+            width: 200px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        /* Efecto de sombra en pantallas móviles - NUEVO ESTILO */
+        .screen-container:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        .screen-header {
+            height: 30px;
+            background: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .screen-notch {
+            width: 60px;
+            height: 20px;
+            background: #2c3e50;
+            border-radius: 0 0 10px 10px;
+            position: absolute;
+            top: 0;
+        }
+        
+        .screen-content {
+            height: 350px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            color: white;
+        }
+        
+        .screen-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .screen-item {
+            background: rgba(255,255,255,0.2);
+            padding: 8px;
+            margin: 8px 0;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Barra de progreso -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    
+    <!-- Navegación rápida -->
+    <div class="quick-nav">
+        <button id="btnPrev" title="Sección anterior"><i class="fas fa-arrow-up"></i></button>
+        <button id="btnNext" title="Siguiente sección"><i class="fas fa-arrow-down"></i></button>
+        <button id="btnTop" title="Ir al inicio"><i class="fas fa-home"></i></button>
+    </div>
+    
+    <div class="container">
+        <!-- Panel lateral con navegación -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>SIGB</h1>
+                <p>Sistema Integral de Gestión de Bibliotecas</p>
+            </div>
+            
+            <div class="nav-section">
+                <h3>Manual de Usuario</h3>
+                <ul class="nav-links">
+                    <li><a href="#introduccion" class="active"><i class="fas fa-home icon"></i> Introducción</a></li>
+                    <li><a href="#requisitos-usuario"><i class="fas fa-list-alt icon"></i> Requisitos del Sistema</a></li>
+                    <li><a href="#instalacion-usuario"><i class="fas fa-download icon"></i> Instalación (Usuario)</a></li>
+                    <li><a href="#operacion-sistema"><i class="fas fa-play icon"></i> Operación del Sistema</a></li>
+                    <li><a href="#roles-usuarios"><i class="fas fa-users icon"></i> Roles de Usuario</a></li>
+                    <li><a href="#modulo-catalogo"><i class="fas fa-book icon"></i> Módulo Catálogo</a></li>
+                    <li><a href="#modulo-inventarios"><i class="fas fa-boxes icon"></i> Módulo Inventarios</a></li>
+                    <li><a href="#modulo-prestamos"><i class="fas fa-exchange-alt icon"></i> Préstamos/Devoluciones</a></li>
+                    <li><a href="#modulo-multas"><i class="fas fa-exclamation-triangle icon"></i> Módulo Multas</a></li>
+                    <li><a href="#modulo-cliente"><i class="fas fa-user icon"></i> Módulo Cliente</a></li>
+                    <li><a href="#app-movil"><i class="fas fa-mobile-alt icon"></i> App Móvil</a></li>
+                     <li><a href="https://drive.google.com/file/d/1BR54CYvfqf3jVqgKZNc6zz_oVDmCOSld/view?usp=sharing"><i class="fas fa-mobile-alt icon"></i> Video Tutorial</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <h3>Manual Técnico</h3>
+                <ul class="nav-links">
+                    <li><a href="#objetivo-alcance"><i class="fas fa-bullseye icon"></i> Objetivo y Alcance</a></li>
+                    <li><a href="#arquitectura"><i class="fas fa-sitemap icon"></i> Arquitectura</a></li>
+                    <li><a href="#requisitos-tecnicos"><i class="fas fa-server icon"></i> Requisitos Técnicos</a></li>
+                    <li><a href="#diseno-bd"><i class="fas fa-database icon"></i> Diseño BD</a></li>
+                    <li><a href="#seguridad"><i class="fas fa-shield-alt icon"></i> Seguridad</a></li>
+                    <li><a href="#instalacion-tecnica"><i class="fas fa-cogs icon"></i> Instalación Técnica</a></li>
+                    <li><a href="#mantenimiento"><i class="fas fa-tools icon"></i> Mantenimiento</a></li>
+                    <li><a href="#solucion-problemas"><i class="fas fa-wrench icon"></i> Solución Problemas</a></li>
+                    <li><a href="#app-movil-tecnico"><i class="fas fa-mobile-alt icon"></i> App Móvil (Técnico)</a></li>
+                </ul>
+            </div>
+            
+           <div class="nav-section">
+    <h3>Acciones Rápidas</h3>
+    <div style="padding: 10px 20px;">
+        <button class="btn btn-success" id="btnPrint" style="width: 100%; margin: 5px 0;">
+            <i class="fas fa-print"></i> Imprimir Manual
+        </button>
+        
+        <a href="https://drive.google.com/file/d/1QI_lCylZtaCJ0Mj3lhj8uzA4u0Xhn3zt/view?usp=sharing" class="btn btn-primary" style="width: 100%; margin: 5px 0; display: block; text-decoration: none; text-align: center;" target="_blank">
+            <i class="fas fa-video"></i> Video de instalador
+        </a>
+        
+        <a href="https://drive.google.com/file/d/1I2n8cNNsJ6Qr8SHcDCJ54U3CjI1NJm-v/view?usp=sharing" class="btn btn-info" style="width: 100%; margin: 5px 0; display: block; text-decoration: none; text-align: center;" target="_blank">
+            <i class="fas fa-video"></i> Video de Desktop
+        </a>
+        
+ 
+         <a href="https://drive.google.com/file/d/1BR54CYvfqf3jVqgKZNc6zz_oVDmCOSld/view?usp=sharing" class="btn btn-warning" style="width: 100%; margin: 5px 0; display: block; text-decoration: none; text-align: center;"target="_blank">
+            <i class="fas fa-video"></i> Videos Movil
+        </a>
+
+          <a href="https://drive.google.com/file/d/1lSweXIf8m3as3L5oA4Lqj1Y1SzxSm9-S/view?usp=sharing" class="btn btn-warning" style="width: 100%; margin: 5px 0; display: block; text-decoration: none; text-align: center;"target="_blank">
+            <i class="fas fa-download"></i> Descargar ejecutable
+        </a>
+        
+        <button class="btn btn-secondary" id="btnSearch" style="width: 100%; margin: 5px 0;">
+            <i class="fas fa-search"></i> Buscar en Manual
+        </button>
+    </div>
+</div>
+        </aside>
+        
+        <!-- Contenido principal -->
+        <main class="main-content">
+            <!-- SECCIONES DEL MANUAL DE USUARIO -->
+            
+            <!-- Sección de Introducción -->
+            <section id="introduccion" class="section">
+                <h2>Introducción</h2>
+                <p>Bienvenido al manual de usuario y técnico de <strong>SIGB</strong>, el Sistema Integral de Gestión de Bibliotecas que automatiza y centraliza la administración completa de una biblioteca.</p>
+                
+                <h3>¿Qué es SIGB?</h3>
+                <p><strong>SIGB</strong> es una aplicación de escritorio diseñada en Java que cubre el ciclo completo de gestión bibliotecaria:</p>
+                <ul>
+                    <li>Gestión centralizada de catálogo bibliográfico</li>
+                    <li>Sistema de préstamos y devoluciones automatizado</li>
+                    <li>Control de inventarios físicos</li>
+                    <li>Módulo de reservas</li>
+                    <li>Gestión de multas y caja</li>
+                    <li>Seguridad con autenticación biométrica</li>
+                    <li>Portal del cliente (autoservicio)</li>
+                    <li>Reportes financieros y estadísticos</li>
+                </ul>
+                
+                <div class="note">
+                    <p><strong>Característica clave:</strong> El sistema está segmentado por roles para garantizar que cada usuario acceda únicamente a las funciones que le corresponden, mejorando la seguridad y eficiencia operativa.</p>
+                </div>
+            </section>
+            
+            <!-- Sección de Requisitos del Sistema (Usuario) -->
+            <section id="requisitos-usuario" class="section">
+                <h2>Requisitos del Sistema (Usuario)</h2>
+                <p>Esta sección detalla los requerimientos mínimos de hardware y software para el correcto funcionamiento del SIGB.</p>
+                
+                <h3>Requerimientos de Hardware</h3>
+                <table>
+                    <tr>
+                        <th>Componente</th>
+                        <th>Mínimo Recomendado</th>
+                    </tr>
+                    <tr>
+                        <td>Procesador</td>
+                        <td>Core i3 o equivalente</td>
+                    </tr>
+                    <tr>
+                        <td>Memoria RAM</td>
+                        <td>4 GB</td>
+                    </tr>
+                    <tr>
+                        <td>Espacio en Disco</td>
+                        <td>2 GB (para la aplicación y datos locales)</td>
+                    </tr>
+                </table>
+                
+                <h3>Requerimientos de Software</h3>
+                <table>
+                    <tr>
+                        <th>Componente</th>
+                        <th>Especificación</th>
+                    </tr>
+                    <tr>
+                        <td>Sistema Operativo</td>
+                        <td>Windows 10/11, macOS, o distribución Linux reciente</td>
+                    </tr>
+                    <tr>
+                        <td>Entorno de Ejecución</td>
+                        <td>Java Runtime Environment (JRE) 8 o superior</td>
+                    </tr>
+                    <tr>
+                        <td>Base de Datos</td>
+                        <td>Conexión al servidor SQL Server (Configuración a cargo de TI)</td>
+                    </tr>
+                </table>
+            </section>
+            
+            <!-- Sección de Instalación (Usuario) -->
+            <section id="instalacion-usuario" class="section">
+                <h2>Instalación y Configuración (Usuario)</h2>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Instalación del JRE</strong>
+                    <p>Asegúrese de tener instalado Java Runtime Environment (JRE) 8 o superior. Si no lo tiene, descárguelo e instálelo desde el sitio oficial de Oracle.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Ejecución del Sistema</strong>
+                    <p>El sistema se ejecuta a través del archivo ejecutable principal (generalmente un archivo .jar o un wrapper de escritorio).</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Configuración Inicial (Solo en Primer Uso)</strong>
+                    <p>Si el archivo de configuración de la conexión a la base de datos no existe, el sistema solicitará la ruta de conexión a la base de datos SQL Server. Esta información es proporcionada por el Administrador de Sistemas.</p>
+                </div>
+            </section>
+            
+            <!-- Sección de Operación del Sistema -->
+            <section id="operacion-sistema" class="section">
+                <h2>Operación del Sistema</h2>
+                
+                <h3>Inicio de Sesión y Autenticación</h3>
+                <p>El sistema requiere autenticación de dos factores o primaria avanzada.</p>
+                
+                <h4>Acceso Estándar</h4>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Login</strong>
+                    <p>Ingrese su Nombre de Usuario y Contraseña en los campos correspondientes.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Iniciar Sesión</strong>
+                    <p>Haga clic en "Iniciar Sesión" para acceder al sistema.</p>
+                </div>
+                
+                <h4>Opción Avanzada (Reconocimiento Facial)</h4>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Inicio de Sesión Facial</strong>
+                    <p>Si su rostro está enrolado en el sistema, puede utilizar el botón "Iniciar con Reconocimiento Facial" para un acceso más rápido.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Requisitos</strong>
+                    <p>Asegúrese de tener una cámara conectada y una buena iluminación.</p>
+                </div>
+                
+                <h3>Proceso de Enrolamiento Facial (Registro Biométrico)</h3>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Registro Inicial</strong>
+                    <p>Si es la primera vez que inicia sesión con esta función, el Administrador o Bibliotecario deberá realizar su registro facial.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Enrolamiento</strong>
+                    <p>El sistema le solicitará de 3 a 5 capturas faciales para crear su plantilla biométrica.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Recomendaciones</strong>
+                    <p>Mantenga una expresión neutral y una iluminación estable mientras se toman las capturas para asegurar la precisión.</p>
+                </div>
+                
+                <h3>Menú Principal y Dashboard</h3>
+                <p>Una vez autenticado, el sistema le mostrará el menú principal con las opciones permitidas para su rol.</p>
+                <p>El menú lateral izquierdo le permite acceder a los módulos de Catálogo, Inventarios, Préstamos/Devoluciones, Multas, Reportes y Seguridad. Las opciones visibles dependerán de su rol asignado.</p>
+            </section>
+            
+            <!-- Sección de Roles de Usuario -->
+            <section id="roles-usuarios" class="section">
+                <h2>Roles de Usuario</h2>
+                <p>El acceso a las funciones del SIGB está determinado por el rol asignado al usuario.</p>
+                
+                <div class="user-roles">
+                    <div class="role-card admin">
+                        <h4><i class="fas fa-user-shield"></i> Administrador</h4>
+                        <p><strong>Público Objetivo:</strong> Personal de TI / Supervisor</p>
+                        <p><strong>Módulos Clave:</strong> Acceso total a la aplicación</p>
+                        <ul>
+                            <li>Configuración del sistema</li>
+                            <li>Gestión de usuarios</li>
+                            <li>Parámetros del sistema</li>
+                            <li>Módulos de seguridad y auditoría</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="role-card librarian">
+                        <h4><i class="fas fa-user-tie"></i> Bibliotecario</h4>
+                        <p><strong>Público Objetivo:</strong> Personal de Sala / Inventario</p>
+                        <p><strong>Módulos Clave:</strong> Préstamos/Devoluciones, Reservas, Clientes</p>
+                        <ul>
+                            <li>Catálogo (Lectura/Alta de copias)</li>
+                            <li>Solicitudes de Compra</li>
+                            <li>Reportes operativos</li>
+                            <li>Gestión de reservas</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="role-card client">
+                        <h4><i class="fas fa-user"></i> Cliente</h4>
+                        <p><strong>Público Objetivo:</strong> Lectores/Usuarios Registrados</p>
+                        <p><strong>Módulos Clave:</strong> Autoservicio</p>
+                        <ul>
+                            <li>Consulta de préstamos vigentes</li>
+                            <li>Historial de préstamos</li>
+                            <li>Reservas activas</li>
+                            <li>Multas pendientes</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="role-card financial">
+                        <h4><i class="fas fa-calculator"></i> Financiero</h4>
+                        <p><strong>Público Objetivo:</strong> Personal de Caja / Contabilidad</p>
+                        <p><strong>Módulos Clave:</strong> Multas y Caja</p>
+                        <ul>
+                            <li>Cobros de multas</li>
+                            <li>Arqueo de caja</li>
+                            <li>Reportes de recaudación</li>
+                            <li>Gestión de pagos</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Sección de Módulo Catálogo -->
+            <section id="modulo-catalogo" class="section">
+                <h2>Módulo Catálogo (Administrador y Bibliotecario)</h2>
+                <p>Permite la gestión de los recursos de la biblioteca.</p>
+                
+                <h3>Autores/Categorías/Editoriales (CRUD)</h3>
+                <p>El Administrador puede realizar las operaciones CRUD (Crear, Leer, Actualizar, Eliminar) en el maestro de autores y categorías.</p>
+                
+                <h3>Libros (CRUD)</h3>
+                <p>Permite registrar libros con metadatos clave: ISBN, edición, año, idioma, editorial, y la ubicación física (sala, estante, nivel).</p>
+                
+                <h3>Búsqueda Avanzada</h3>
+                <p>Utilice la función de búsqueda con filtros combinados por título, autor, categoría, rango de años y disponibilidad para localizar material rápidamente.</p>
+            </section>
+            
+            <!-- Sección de Módulo Inventarios -->
+            <section id="modulo-inventarios" class="section">
+                <h2>Módulo Inventarios (Administrador y Bibliotecario)</h2>
+                <p>Gestiona las copias físicas de los libros.</p>
+                
+                <h3>Gestión de Libros</h3>
+                <p>Permite dar de alta/baja a las copias individuales (usando baja lógica) y reasignar su ubicación.</p>
+
+                  <h3>Gestión de Movmientos de inmventario</h3>
+                <p>Permite dar a conocer movimientos en en inventario de libros.</p>
+                
+                <h3> Vitacora de Inventario</h3>
+                <p>El sistema soporta conteos cíclicos y el ajuste de existencias con una bitácora de diferencias.</p>
+                
+                <h3>Alertas de inventario</h3>
+                <p>Se generan avisos por mínimos de copias disponibles o por libros extraviados/deteriorados.</p>
+            </section>
+            
+            <!-- Sección de Módulo Préstamos y Devoluciones -->
+            <section id="modulo-prestamos" class="section">
+                <h2>Módulo Préstamos y Devoluciones (Bibliotecario)</h2>
+                <p>Gestiona el flujo de material de la biblioteca.</p>
+                
+                <h3>Proceso de Préstamo</h3>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Selección de Cliente</strong>
+                    <p>Use el campo de búsqueda para localizar al cliente. El sistema validará automáticamente que el cliente no esté bloqueado por morosidad o haya excedido el límite de préstamos activos.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Selección de Copia</strong>
+                    <p>El cliente puede reservar un libre sin afectar el inventario en el cual coloca el numero de cola  que tiene el cliente para obtener el libro, luego de realizar la reserva se procede a ingresar el presatamo.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Confirmación</strong>
+                    <p>El sistema muestra las reservas del cliente selccionado se valida los datos y se registra y muestra la fecha en que se puede entregar los libro(15 dias).</p>
+                </div>
+                
+                <h3>Proceso de Devolución</h3>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Registro de Devolución</strong>
+                    <p>selecciona el cliente y desplegara el listado de los prestamos que desa devolver, se le habilitara un campo de fecha dodne deberia de entregarlo y la fecha donde lo entrego y le habilita un checkbos aplica a la multa.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Cálculo de Multa</strong>
+                    <p>evalua la fecha de prestamo vs de devolucion en la cual automaticamente hace el ajuste del valor de la multa.</p>
+                </div>
+                
+                <h3>Renovaciones</h3>
+                <p>Permite extender la fecha de vencimiento si no hay reservas pendientes para ese título.</p>
+            </section>
+            
+            <!-- Sección de Módulo Multas -->
+            <section id="modulo-multas" class="section">
+                <h2>Módulo Multas y Caja (Módulo Financiero)</h2>
+                <p>Gestiona las cuentas por cobrar y el ingreso de multas.</p>
+                
+                <h3>Cobro de Multas</h3>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Consulta de Multas</strong>
+                    <p>La vista de multas muestra todas las multas pendientes de pago generadas al momento de la devolución tardía, indicando el monto total a cobrar.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Cobro en Caja</strong>
+                    <p>Seleccione la multa a pagar. El módulo de Caja permite registrar el cobro y genera un recibo.</p>
+                </div>
+                
+                <h3>Gestión de Caja</h3>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Caja Diaria</td>
+                    <td>Al finalizar la jornada, el usuario financiero puede realizar el Arqueo y Cierre de Caja, generando un resumen de los ingresos del día.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Políticas de Multa</strong>
+                    <p>Las reglas de multa (monto por día de atraso, tope) son parametrizables por el Administrador. Se pueden aplicar exoneraciones con justificación.</p>
+                </div>
+            </section>
+            
+            <!-- Sección de Módulo Cliente -->
+            <section id="modulo-cliente" class="section">
+                <h2>Módulo Cliente (Autoservicio)</h2>
+                <p>Mini-aplicación para uso del lector tras su autenticación.</p>
+                
+                <h3>Resumen Personal</h3>
+                <p>Una vez que el cliente inicia sesión, puede ver un resumen de sus:</p>
+                <ul>
+                    <li>Préstamos Vigentes (con fecha de vencimiento)</li>
+                    <li>Reservas Activas</li>
+                    <li>Historial de Multas pendientes o pagadas</li>
+                    <li>Facturas pagas y por pagar</li>
+                    <li>Devoluciones activas</li>
+
+                </ul>
+                
+                <h3>Consulta de Catálogo</h3>
+                <p>El cliente puede buscar libros por título, autor o categoría y revisar la disponibilidad en tiempo real.</p>
+            </section>
+            
+            <!-- SECCIÓN NUEVA: APLICACIÓN MÓVIL PARA USUARIOS -->
+            <section id="app-movil" class="section">
+                <h2>Aplicación Móvil SIGB (Cliente)</h2>
+                <p>La aplicación móvil SIGB permite a los usuarios acceder a información personalizada sobre su actividad en la biblioteca desde cualquier dispositivo móvil.</p>
+                
+                <div class="note">
+                    <p><strong>Característica destacada:</strong> La aplicación móvil sincroniza en tiempo real con el sistema principal, mostrando información actualizada sobre préstamos, reservas y multas.</p>
+                </div>
+                
+                <h3>Compatibilidad y Descarga</h3>
+                <div class="platforms">
+                    <div class="platform">
+                        <i class="fab fa-android"></i>
+                        <h4>Android</h4>
+                        <p>Disponible en Google Play Store para dispositivos con Android 8.0 o superior</p>
+                    </div>
+                    <div class="platform">
+                        <i class="fab fa-apple"></i>
+                        <h4>iOS</h4>
+                        <p>Disponible en App Store para dispositivos con iOS 12.0 o superior</p>
+                    </div>
+                </div>
+                
+                <h3>Funcionalidades Principales</h3>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Inicio de Sesión</strong>
+                    <p>Los usuarios deben autenticarse utilizando las mismas credenciales que en el sistema web. La aplicación no requiere autenticación biométrica.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Dashboard Personal</strong>
+                    <p>Al iniciar sesión, los usuarios ven un resumen de su actividad actual:</p>
+                    <ul>
+                        <li>Préstamos activos con fechas de vencimiento</li>
+                        <li>Reservas pendientes</li>
+                        <li>Multas por pagar</li>
+                        <li>Facturas pendientes</li>
+                    </ul>
+                </div>
+                
+                <h3>Módulos de la Aplicación</h3>
+                
+                <div class="user-roles">
+                    <div class="role-card">
+                        <h4><i class="fas fa-book-open"></i> Mis Préstamos</h4>
+                        <p>Consulta de libros actualmente en préstamo</p>
+                        <ul>
+                            <li>Lista completa de libros prestados</li>
+                            <li>Fechas de préstamo y vencimiento</li>
+                            <li>Posibilidad de renovación (si aplica)</li>
+                            <li>Historial de préstamos anteriores</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="role-card">
+                        <h4><i class="fas fa-calendar-check"></i> Mis Reservas</h4>
+                        <p>Gestión de reservas de materiales</p>
+                        <ul>
+                            <li>Reservas activas con estado</li>
+                            <li>Posición en lista de espera (si aplica)</li>
+                            <li>Notificaciones cuando el material está disponible</li>
+                            <li>Cancelación de reservas</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="role-card">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Mis Multas</h4>
+                        <p>Consulta y gestión de multas</p>
+                        <ul>
+                            <li>Multas pendientes de pago</li>
+                            <li>Historial de multas pagadas</li>
+                            <li>Detalle del motivo de cada multa</li>
+                            <li>Enlace para pago en línea (si está disponible)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="role-card">
+                        <h4><i class="fas fa-file-invoice-dollar"></i> Mis Facturas</h4>
+                        <p>Gestión de facturas y pagos</p>
+                        <ul>
+                            <li>Facturas pendientes de pago</li>
+                            <li>Historial de pagos realizados</li>
+                            <li>Descarga de facturas en formato PDF</li>
+                            <li>Pago en línea integrado</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <h3>Interfaz de Usuario</h3>
+                
+                <div class="mobile-screens">
+                    <div class="screen-container">
+                        <div class="screen-header">
+                            <div class="screen-notch"></div>
+                        </div>
+                        <div class="screen-content">
+                            <div class="screen-title">Inicio de Sesión</div>
+                            <div class="screen-item">Usuario: ______</div>
+                            <div class="screen-item">Contraseña: ______</div>
+                            <div class="screen-item" style="background: rgba(255,255,255,0.3); text-align: center;">Ingresar</div>
+                        </div>
+                    </div>
+                    
+                    <div class="screen-container">
+                        <div class="screen-header">
+                            <div class="screen-notch"></div>
+                        </div>
+                        <div class="screen-content">
+                            <div class="screen-title">Dashboard</div>
+                            <div class="screen-item">Préstamos: 3 activos</div>
+                            <div class="screen-item">Reservas: 2 pendientes</div>
+                            <div class="screen-item">Multas: $15.00</div>
+                            <div class="screen-item">Facturas: 1 pendiente</div>
+                        </div>
+                    </div>
+                    
+                    <div class="screen-container">
+                        <div class="screen-header">
+                            <div class="screen-notch"></div>
+                        </div>
+                        <div class="screen-content">
+                            <div class="screen-title">Mis Préstamos</div>
+                            <div class="screen-item">Cien años de soledad - Vence: 15/10</div>
+                            <div class="screen-item">El Quijote - Vence: 18/10</div>
+                            <div class="screen-item">Rayuela - Vence: 20/10</div>
+                            <div class="screen-item" style="background: rgba(255,255,255,0.3); text-align: center;">Renovar</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>Características Adicionales</h3>
+                
+                <div class="mobile-features">
+                    <div class="feature-card">
+                        <h4><i class="fas fa-bell"></i> Notificaciones Push</h4>
+                        <p>Reciba alertas sobre vencimientos próximos, reservas disponibles y recordatorios importantes.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4><i class="fas fa-sync-alt"></i> Sincronización en Tiempo Real</h4>
+                        <p>Los datos se actualizan automáticamente cuando hay cambios en el sistema principal.</p>
+                    </div>
+                    
+                  
+                    
+
+                </div>
+                
+                <h3>Limitaciones y Consideraciones</h3>
+                <div class="warning">
+                    <p><strong>Importante:</strong> La aplicación móvil es de solo consulta. No permite realizar operaciones como:</p>
+                    <ul>
+                        <li>Realizar nuevos préstamos</li>
+                        <li>Devolver materiales</li>
+                        <li>Hacer reservas de nuevos materiales</li>
+                        <li>Modificar datos de perfil (excepto contraseña)</li>
+                    </ul>
+                    <p>Estas operaciones deben realizarse a través del sistema web o directamente en la biblioteca.</p>
+                </div>
+                
+                <h3>Solución de Problemas Comunes</h3>
+                <table>
+                    <tr>
+                        <th>Problema</th>
+                        <th>Solución</th>
+                    </tr>
+                    <tr>
+                        <td>Error de conexión</td>
+                        <td>Verificar conexión a Internet y reintentar</td>
+                    </tr>
+                    <tr>
+                        <td>Credenciales incorrectas</td>
+                        <td>Utilizar la opción "Recuperar contraseña" o contactar con la biblioteca</td>
+                    </tr>
+                    <tr>
+                        <td>Datos desactualizados</td>
+                        <td>Utilizar la función "Sincronizar" o "Actualizar" en la aplicación</td>
+                    </tr>
+                    <tr>
+                        <td>La aplicación se cierra inesperadamente</td>
+                        <td>Reiniciar la aplicación o reinstalarla si el problema persiste</td>
+                    </tr>
+                </table>
+            </section>
+            
+            <!-- SECCIONES DEL MANUAL TÉCNICO -->
+            
+            <!-- Sección de Objetivo y Alcance -->
+            <section id="objetivo-alcance" class="section">
+                <h2>Objetivo y Alcance (Manual Técnico)</h2>
+                
+                <h3>Objetivo</h3>
+                <p>Este manual técnico documenta los aspectos técnicos del Sistema Integral de Gestión de Biblioteca (SIGB), incluyendo su arquitectura, diseño de base de datos, y estándares de codificación. Esto facilita a los analistas, programadores y administradores de sistemas el mantenimiento, la modificación y las futuras actualizaciones del sistema.</p>
+                
+                <h3>Alcance</h3>
+                <p>La aplicación es un sistema de escritorio desarrollado en Java, con persistencia en SQL Server, implementando una gestión integral de biblioteca que abarca desde el catálogo y préstamos hasta la seguridad biométrica y la reportería.</p>
+            </section>
+            
+            <!-- Sección de Arquitectura -->
+            <section id="arquitectura" class="section">
+                <h2>Arquitectura del Sistema</h2>
+                
+                <h3>Modelo de Arquitectura</h3>
+                <p>El SIGB implementa la arquitectura de <strong>Modelo Vista Controlador (MVC)</strong>, lo que garantiza la separación de responsabilidades y facilita la mantenibilidad del código:</p>
+                
+                <table>
+                    <tr>
+                        <th>Componente</th>
+                        <th>Responsabilidad</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Modelo (M)</strong></td>
+                        <td>Contiene la lógica de negocio, las entidades de datos (POJOs) y las capas de acceso a datos (DAO - Data Access Objects). Es responsable de interactuar con SQL Server.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vista (V)</strong></td>
+                        <td>Implementada con Java Swing y diseñada a través de un entorno visual (como IntelliJ UI Designer). Contiene la interfaz gráfica que ve el usuario.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Controlador (C)</strong></td>
+                        <td>Maneja las interacciones del usuario (eventos de botones, mouse) y coordina la actualización del Modelo y de la Vista.</td>
+                    </tr>
+                </table>
+                
+                <h3>Tecnología y Componentes Base</h3>
+                <table>
+                    <tr>
+                        <th>Componente</th>
+                        <th>Detalle Técnico</th>
+                        <th>Propósito</th>
+                    </tr>
+                    <tr>
+                        <td>Lenguaje de Programación</td>
+                        <td>Java</td>
+                        <td>Plataforma de desarrollo principal</td>
+                    </tr>
+                    <tr>
+                        <td>Framework de UI</td>
+                        <td>Java Swing</td>
+                        <td>Creación de la interfaz de escritorio</td>
+                    </tr>
+                    <tr>
+                        <td>Gestión de Dependencias</td>
+                        <td>Maven</td>
+                        <td>Administración de librerías externas y compilación del proyecto</td>
+                    </tr>
+                    <tr>
+                        <td>Base de Datos</td>
+                        <td>SQL Server</td>
+                        <td>Sistema de gestión de bases de datos relacionales para persistencia</td>
+                    </tr>
+                    <tr>
+                        <td>Librería de Seguridad</td>
+                        <td>Librería de Hash BCrypt</td>
+                        <td>Hashing seguro de contraseñas de usuario</td>
+                    </tr>
+                    <tr>
+                        <td>Librería Biometría</td>
+                        <td>Librería de Reconocimiento Facial</td>
+                        <td>Captura y comparación de plantillas biométricas para autenticación (2FA)</td>
+                    </tr>
+                </table>
+            </section>
+            
+            <!-- Sección de Requisitos Técnicos -->
+            <section id="requisitos-tecnicos" class="section">
+                <h2>Requisitos Técnicos</h2>
+                <p>Esta sección detalla los requerimientos del entorno de producción o desarrollo donde residirá el sistema y la base de datos.</p>
+                
+                <table>
+                    <tr>
+                        <th>Componente</th>
+                        <th>Mínimo Recomendado</th>
+                    </tr>
+                    <tr>
+                        <td>Sistema Operativo (Servidor)</td>
+                        <td>Windows Server 2016 o superior / Distribución Linux LTS</td>
+                    </tr>
+                    <tr>
+                        <td>Servidor de Base de Datos</td>
+                        <td>SQL Server 2019 o superior</td>
+                    </tr>
+                    <tr>
+                        <td>Memoria RAM (Servidor DB)</td>
+                        <td>8 GB (Recomendado para producción)</td>
+                    </tr>
+                    <tr>
+                        <td>Espacio en Disco (Servidor DB)</td>
+                        <td>100 GB SSD</td>
+                    </tr>
+                    <tr>
+                        <td>Entorno de Desarrollo</td>
+                        <td>JDK 8 o superior, IDE (ej. IntelliJ/Eclipse), Apache Maven</td>
+                    </tr>
+                </table>
+            </section>
+            
+            <!-- Sección de Diseño de Base de Datos -->
+            <section id="diseno-bd" class="section">
+                <h2>Diseño de la Base de Datos</h2>
+                
+                <h3>Modelo Entidad-Relación (MER)</h3>
+                <p>El diseño de la base de datos es relacional y modular. Se fundamenta en un esquema centralizado en las entidades Libro, CopiaLibro, Cliente y Préstamo.</p>
+                
+                <h3>Tablas Clave del Sistema</h3>
+                <table>
+                    <tr>
+                        <th>Tabla</th>
+                        <th>Propósito</th>
+                        <th>Columnas Clave / Datos Almacenados</th>
+                    </tr>
+                    <tr>
+                        <td>CopiaLibro</td>
+                        <td>Control del inventario físico de cada ejemplar</td>
+                        <td>idCopia, idLibro, codigoBarras, ubicacion, estadoCopia</td>
+                    </tr>
+                    <tr>
+                        <td>Préstamo</td>
+                        <td>Trazabilidad del flujo de material</td>
+                        <td>idPrestamo, idCliente, idCopiaLibro, fechaVencimiento, estado</td>
+                    </tr>
+                    <tr>
+                        <td>Multa</td>
+                        <td>Registro de penalizaciones por atraso</td>
+                        <td>idMulta, idPrestamo, monto, diasAtraso, estadoPago</td>
+                    </tr>
+                    <tr>
+                        <td>Cliente</td>
+                        <td>Registro maestro de los lectores</td>
+                        <td>idCliente, nombre, direccion, multasPendientes</td>
+                    </tr>
+                    <tr>
+                        <td>RostroUsuario</td>
+                        <td>Almacenamiento de la plantilla biométrica</td>
+                        <td>idUsuario, plantilla (data codificada), fechaRegistro</td>
+                    </tr>
+                    <tr>
+                        <td>Auditoria</td>
+                        <td>Bitácora de seguridad y acciones críticas (CRUD, Logins)</td>
+                        <td>fechaHora, usuario, modulo, accion, detalle</td>
+                    </tr>
+                    <tr>
+                        <td>Parametro</td>
+                        <td>Configuración de políticas de negocio</td>
+                        <td>clave (ej. dias_max_prestamo, multa_por_dia), valor</td>
+                    </tr>
+                    <tr>
+                        <td>CajaMovimiento</td>
+                        <td>Registro financiero de cobros (multas) y arqueos</td>
+                        <td>fechaHora, tipo, monto, idUsuario, referencia</td>
+                    </tr>
+                </table>
+            </section>
+            
+            <!-- Sección de Seguridad -->
+            <section id="seguridad" class="section">
+                <h2>Seguridad y Estándares de Codificación</h2>
+                
+                <h3>Seguridad de Contraseñas y Biometría</h3>
+                <p><strong>Hash BCrypt:</strong> Las contraseñas de los usuarios se almacenan utilizando la función de Hash BCrypt para asegurar que nunca se guarden en texto plano.</p>
+                
+                <p><strong>Reconocimiento Facial:</strong> La autenticación biométrica se realiza mediante:</p>
+                <ul>
+                    <li><strong>Enrolamiento:</strong> Captura de 3 a 5 imágenes para generar una plantilla que se guarda en la tabla RostroUsuario. No se almacenan las fotos crudas del usuario.</li>
+                    <li><strong>Login Facial:</strong> La plantilla capturada en el momento del login se compara con la guardada.</li>
+                </ul>
+                
+                <p><strong>Auditoría:</strong> Se implementa un registro detallado en la tabla Auditoria para todas las acciones sensibles (ej. alta de copias, modificación de multas, login exitoso/fallido).</p>
+                
+                <h3>Estándares de Codificación</h3>
+                <ul>
+                    <li><strong>Patrón MVC:</strong> El código fuente está estructurado para cumplir con el patrón MVC, separando las clases de Vista, Controlador y DAO (Data Access Objects).</li>
+                    <li><strong>Prevención de Inyección SQL:</strong> Todas las interacciones con la base de datos deben utilizar PreparedStatement de Java para parametrizar las consultas y prevenir vulnerabilidades de inyección SQL.</li>
+                    <li><strong>Gestión de Conexión:</strong> La capa de conexión a la base de datos (ODBCConnection o similar) es centralizada para facilitar la gestión de recursos.</li>
+                </ul>
+            </section>
+            
+            <!-- Sección de Instalación Técnica -->
+            <section id="instalacion-tecnica" class="section">
+                <h2>Instalación y Despliegue</h2>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Script de Base de Datos</strong>
+                    <p>Ejecutar el script db_schema.sql (o el equivalente) en el servidor de SQL Server para crear la base de datos, todas las tablas e índices.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Configuración de Conexión</strong>
+                    <p>La cadena de conexión a la base de datos debe ser almacenada en un archivo de configuración seguro (ej. un archivo .properties o .xml), fuera del código fuente, para no exponer credenciales.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Compilación y Ejecución</strong>
+                    <p>Compilar el proyecto con Maven para generar el archivo ejecutable (.jar) y distribuirlo a las estaciones de trabajo cliente.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Permisos de Usuario DB</strong>
+                    <p>El usuario de conexión a la base de datos debe tener, como mínimo, los permisos de SELECT, INSERT, UPDATE, y DELETE sobre las tablas del esquema.</p>
+                </div>
+                
+                <div class="code-block">
+                    // Ejemplo de configuración de conexión en application.properties<br>
+                    database.url=jdbc:sqlserver://localhost:1433;databaseName=SIGB<br>
+                    database.username=sigb_user<br>
+                    database.password=contraseña_segura<br>
+                    database.driver=com.microsoft.sqlserver.jdbc.SQLServerDriver
+                </div>
+            </section>
+            
+            <!-- Sección de Mantenimiento -->
+            <section id="mantenimiento" class="section">
+                <h2>Mantenimiento y Evolución</h2>
+                
+                <h3>Mantenimiento de Módulos</h3>
+                <p>La estructura MVC permite que el mantenimiento se centre en las clases del Modelo y los DAO correspondientes.</p>
+                
+                <ul>
+                    <li>Para cambios en las reglas de negocio (ej. cálculo de multas), modificar la clase de servicio que interactúa con la tabla Parametro.</li>
+                    <li>Para añadir una nueva funcionalidad, se debe crear una nueva Vista, un nuevo Controlador y extender los DAO existentes.</li>
+                </ul>
+                
+                <h3>Escalabilidad</h3>
+                <p>El sistema está diseñado para permitir futuras adiciones como un soporte para múltiples idiomas o una migración a una arquitectura de microservicios sin reescribir la lógica de negocio (Modelo).</p>
+                
+                <h3>Reportes</h3>
+                <p>El módulo de reportes es independiente y permite agregar nuevos informes (PDF/Excel) utilizando filtros por fecha, usuario y ubicación.</p>
+            </section>
+            
+            <!-- Sección de Solución de Problemas -->
+            <section id="solucion-problemas" class="section">
+                <h2>Solución de Problemas Comunes</h2>
+                
+                <table>
+                    <tr>
+                        <th>Mensaje de Error</th>
+                        <th>Posible Causa</th>
+                        <th>Solución</th>
+                    </tr>
+                    <tr>
+                        <td>"Error en la cadena de conexión o SQL Server no disponible."</td>
+                        <td>El servidor de base de datos está inactivo o la configuración de conexión es incorrecta.</td>
+                        <td>Verifique la conectividad de red y contacte al Administrador de Sistemas.</td>
+                    </tr>
+                    <tr>
+                        <td>"Credenciales no válidas."</td>
+                        <td>Usuario o contraseña incorrectos.</td>
+                        <td>Intente de nuevo o use la función de restablecimiento de contraseña (si está disponible).</td>
+                    </tr>
+                    <tr>
+                        <td>"El usuario ha excedido el límite de préstamos."</td>
+                        <td>El cliente tiene el máximo de libros permitidos o tiene multas sin pagar que lo bloquean.</td>
+                        <td>Solicite la devolución de material o el pago de las multas pendientes.</td>
+                    </tr>
+                    <tr>
+                        <td>"Fallo en la verificación facial: Iluminación o rostro no encontrado."</td>
+                        <td>Mala iluminación, rostro cubierto o plantilla biométrica no enrolada.</td>
+                        <td>Asegúrese de tener buena luz y repita el proceso de enrolamiento si es necesario.</td>
+                    </tr>
+                </table>
+                
+                <div class="warning">
+                    <p><strong>Nota:</strong> Para problemas técnicos complejos, contacte al administrador del sistema o al equipo de desarrollo.</p>
+                </div>
+            </section>
+            
+            <!-- SECCIÓN NUEVA: APLICACIÓN MÓVIL (TÉCNICO) -->
+            <section id="app-movil-tecnico" class="section">
+                <h2>Aplicación Móvil - Especificaciones Técnicas</h2>
+                
+                <h3>Arquitectura de la Aplicación Móvil</h3>
+                <p>La aplicación móvil SIGB utiliza una arquitectura cliente-servidor con las siguientes características:</p>
+                
+                <table>
+                    <tr>
+                        <th>Componente</th>
+                        <th>Tecnología</th>
+                        <th>Responsabilidad</th>
+                    </tr>
+                    <tr>
+                        <td>Frontend Móvil</td>
+                        <td>React Native</td>
+                        <td>Interfaz de usuario multiplataforma (iOS/Android)</td>
+                    </tr>
+                    <tr>
+                        <td>Backend API</td>
+                        <td>Nodejs</td>
+                        <td>Servicios REST para comunicación con la base de datos</td>
+                    </tr>
+                    <tr>
+                        <td>Base de Datos</td>
+                        <td>SQL Server</td>
+                        <td>Misma base de datos del sistema principal</td>
+                    </tr>
+                    <tr>
+                        <td>Autenticación</td>
+                        <td>JWT (JSON Web Tokens)</td>
+                        <td>Gestión segura de sesiones de usuario</td>
+                    </tr>
+                    <tr>
+                        <td>Notificaciones</td>
+                        <td>Firebase Cloud Messaging</td>
+                        <td>Envío de notificaciones push a dispositivos</td>
+                    </tr>
+                </table>
+                
+                <h3>API REST - Endpoints Principales</h3>
+                
+                <div class="api-endpoints">
+                    <div class="api-endpoint">
+                        <span class="endpoint-method endpoint-post">POST</span>
+                        <strong>/api/auth/login</strong>
+                        <p>Autenticación de usuario. Retorna token JWT para sesión.</p>
+                        <div class="code-block" style="margin: 10px 0; font-size: 12px;">
+                            // Request<br>
+                            { "username": "usuario", "password": "contraseña" }<br><br>
+                            // Response<br>
+                            { "token": "jwt_token", "user": { ... } }
+                        </div>
+                    </div>
+                    
+                    <div class="api-endpoint">
+                        <span class="endpoint-method endpoint-get">GET</span>
+                        <strong>/api/users/{id}/loans</strong>
+                        <p>Obtiene lista de préstamos activos del usuario.</p>
+                    </div>
+                    
+                    <div class="api-endpoint">
+                        <span class="endpoint-method endpoint-get">GET</span>
+                        <strong>/api/users/{id}/reservations</strong>
+                        <p>Obtiene reservas activas del usuario.</p>
+                    </div>
+                    
+                    <div class="api-endpoint">
+                        <span class="endpoint-method endpoint-get">GET</span>
+                        <strong>/api/users/{id}/fines</strong>
+                        <p>Consulta multas pendientes de pago.</p>
+                    </div>
+                    
+                    <div class="api-endpoint">
+                        <span class="endpoint-method endpoint-get">GET</span>
+                        <strong>/api/users/{id}/invoices</strong>
+                        <p>Obtiene facturas pendientes y historial.</p>
+                    </div>
+                    
+                    <div class="api-endpoint">
+                        <span class="endpoint-method endpoint-put">PUT</span>
+                        <strong>/api/loans/{id}/renew</strong>
+                        <p>Renueva un préstamo activo (si aplica).</p>
+                    </div>
+                </div>
+                
+                <h3>Estructura de Datos Móvil</h3>
+                
+                <div class="code-block">
+                    // Modelo de Préstamo para la app móvil<br>
+                    {<br>
+                    &nbsp;&nbsp;"id": 12345,<br>
+                    &nbsp;&nbsp;"bookTitle": "Cien años de soledad",<br>
+                    &nbsp;&nbsp;"author": "Gabriel García Márquez",<br>
+                    &nbsp;&nbsp;"loanDate": "2023-10-01",<br>
+                    &nbsp;&nbsp;"dueDate": "2023-10-15",<br>
+                    &nbsp;&nbsp;"renewalsLeft": 1,<br>
+                    &nbsp;&nbsp;"canRenew": true<br>
+                    }<br><br>
+                    
+                    // Modelo de Reserva<br>
+                    {<br>
+                    &nbsp;&nbsp;"id": 67890,<br>
+                    &nbsp;&nbsp;"bookTitle": "El amor en los tiempos del cólera",<br>
+                    &nbsp;&nbsp;"positionInQueue": 2,<br>
+                    &nbsp;&nbsp;"reservationDate": "2023-10-05",<br>
+                    &nbsp;&nbsp;"estimatedAvailability": "2023-10-20"<br>
+                    }
+                </div>
+                
+                <h3>Seguridad en la Aplicación Móvil</h3>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Autenticación con JWT</strong>
+                    <p>Las credenciales se validan una vez y se emite un token JWT con expiración que se usa en requests posteriores.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Autorización por Usuario</strong>
+                    <p>Cada usuario solo puede acceder a sus propios datos. El backend valida que el ID de usuario en el token coincida con los datos solicitados.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Comunicación Segura</strong>
+                    <p>Todas las comunicaciones utilizan HTTPS con certificados SSL válidos.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Almacenamiento Local Seguro</strong>
+                    <p>El token JWT se almacena de forma segura usando Keychain (iOS) o Keystore (Android).</p>
+                </div>
+                
+                <h3>Flujo de Sincronización</h3>
+                <ol>
+                    <li>La aplicación móvil realiza login y obtiene token JWT</li>
+                    <li>Se descargan los datos del usuario (préstamos, reservas, multas)</li>
+                    <li>Los datos se almacenan localmente para acceso offline</li>
+                    <li>La aplicación verifica periódicamente actualizaciones</li>
+                    <li>Las notificaciones push alertan sobre cambios importantes</li>
+                </ol>
+                
+                <h3>Configuración de Entorno</h3>
+                
+                <div class="code-block">
+                    // Configuración de desarrollo<br>
+                    API_BASE_URL=https://dev.api.sigb.com/v1<br>
+                    FCM_SENDER_ID=123456789<br>
+                    APP_VERSION=1.0.0<br><br>
+                    
+                    // Configuración de producción<br>
+                    API_BASE_URL=https://api.sigb.com/v1<br>
+                    FCM_SENDER_ID=987654321<br>
+                    APP_VERSION=1.0.0
+                </div>
+                
+                <h3>Proceso de Build y Distribución</h3>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Configuración de Entorno</strong>
+                    <p>Definir variables de entorno para desarrollo, staging y producción.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Build para Android</strong>
+                    <p>Generar APK o AAB usando Gradle y firmar con keystore de release.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Build para iOS</strong>
+                    <p>Compilar con Xcode y generar IPA usando certificados de distribución.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Distribución</strong>
+                    <p>Publicar en Google Play Store y Apple App Store según sus guidelines.</p>
+                </div>
+                
+                <h3>Mantenimiento y Actualizaciones</h3>
+                
+                <div class="warning">
+                    <p><strong>Consideraciones importantes:</strong></p>
+                    <ul>
+                        <li>Mantener compatibilidad con versiones anteriores de la API</li>
+                        <li>Implementar migraciones de base de datos sin pérdida de datos</li>
+                        <li>Probar exhaustivamente en diferentes dispositivos y versiones de OS</li>
+                        <li>Monitorear crash reports y métricas de uso</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Script para la navegación suave y funcionalidades
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-links a');
+            const sections = document.querySelectorAll('.section');
+            const progressBar = document.getElementById('progressBar');
+            const btnPrev = document.getElementById('btnPrev');
+            const btnNext = document.getElementById('btnNext');
+            const btnTop = document.getElementById('btnTop');
+            const btnPrint = document.getElementById('btnPrint');
+            const btnSearch = document.getElementById('btnSearch');
+            const btnToggleImages = document.getElementById('btnToggleImages');
+            
+            let currentSectionIndex = 0;
+            let imagesVisible = true;
+            
+            // Navegación suave para enlaces del menú lateral
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetSection = document.getElementById(targetId.substring(1));
+                    
+                    if (targetSection) {
+                        // Desplazamiento suave
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                        
+                        // Actualizar enlace activo
+                        navLinks.forEach(link => link.classList.remove('active'));
+                        this.classList.add('active');
+                        
+                        // Actualizar índice de sección actual
+                        sections.forEach((section, index) => {
+                            if (section.id === targetId.substring(1)) {
+                                currentSectionIndex = index;
+                            }
+                        });
+                    }
+                });
+            });
+            
+            // Función para desplazarse a una sección
+            function scrollToSection(sectionId) {
+                const targetSection = document.getElementById(sectionId);
+                if (targetSection) {
+                    targetSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    
+                    // Actualizar índice de sección actual
+                    sections.forEach((section, index) => {
+                        if (section.id === sectionId) {
+                            currentSectionIndex = index;
+                        }
+                    });
+                    
+                    // Actualizar enlace activo
+                    updateActiveNavLink(sectionId);
+                }
+            }
+            
+            // Actualizar enlace de navegación activo
+            function updateActiveNavLink(sectionId) {
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + sectionId) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+            
+            // Navegación con botones
+            btnPrev.addEventListener('click', function() {
+                if (currentSectionIndex > 0) {
+                    currentSectionIndex--;
+                    const targetSection = sections[currentSectionIndex];
+                    scrollToSection(targetSection.id);
+                }
+            });
+            
+            btnNext.addEventListener('click', function() {
+                if (currentSectionIndex < sections.length - 1) {
+                    currentSectionIndex++;
+                    const targetSection = sections[currentSectionIndex];
+                    scrollToSection(targetSection.id);
+                }
+            });
+            
+            btnTop.addEventListener('click', function() {
+                scrollToSection('introduccion');
+            });
+            
+            // Botón de impresión
+            btnPrint.addEventListener('click', function() {
+                window.print();
+            });
+            
+            // Botón de búsqueda
+            btnSearch.addEventListener('click', function() {
+                const searchTerm = prompt('Ingrese el término a buscar:');
+                if (searchTerm) {
+                    // Búsqueda simple - en una implementación real sería más sofisticada
+                    const elements = document.querySelectorAll('p, li, h2, h3, td');
+                    let found = false;
+                    
+                    elements.forEach(element => {
+                        if (element.textContent.toLowerCase().includes(searchTerm.toLowerCase())) {
+                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            element.style.backgroundColor = '#ffffcc';
+                            setTimeout(() => {
+                                element.style.backgroundColor = '';
+                            }, 3000);
+                            found = true;
+                        }
+                    });
+                    
+                    if (!found) {
+                        alert('No se encontraron resultados para: ' + searchTerm);
+                    }
+                }
+            });
+            
+            // Resaltar sección activa al hacer scroll
+            window.addEventListener('scroll', function() {
+                let current = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    
+                    if (pageYOffset >= (sectionTop - 100)) {
+                        current = section.getAttribute('id');
+                        currentSectionIndex = Array.from(sections).indexOf(section);
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + current) {
+                        link.classList.add('active');
+                    }
+                });
+                
+                // Actualizar barra de progreso
+                updateProgressBar();
+            });
+            
+            // Actualizar barra de progreso
+            function updateProgressBar() {
+                const windowHeight = window.innerHeight;
+                const documentHeight = document.documentElement.scrollHeight - windowHeight;
+                const scrollTop = window.pageYOffset;
+                const progress = (scrollTop / documentHeight) * 100;
+                progressBar.style.width = progress + '%';
+            }
+            
+            // Inicializar barra de progreso
+            updateProgressBar();
+            
+            // Hacer la función scrollToSection global para que funcione desde los botones
+            window.scrollToSection = scrollToSection;
+        });
+    </script>
+</body>
+</html>
